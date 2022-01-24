@@ -54,8 +54,7 @@ public class ProviderInternalJvmTestRequest implements InternalJvmTestRequest, S
         if (className != null ? !className.equals(that.className) : that.className != null) {
             return false;
         }
-        return !(methodName != null ? !methodName.equals(that.methodName) : that.methodName != null);
-
+        return methodName != null ? methodName.equals(that.methodName) : that.methodName == null;
     }
 
     @Override

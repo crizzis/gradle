@@ -34,6 +34,7 @@ import org.gradle.internal.operations.OperationProgressEvent;
 import org.gradle.internal.operations.OperationStartEvent;
 import org.gradle.tooling.internal.protocol.events.InternalTestDescriptor;
 import org.gradle.tooling.internal.protocol.test.InternalJvmTestRequest;
+import org.gradle.tooling.internal.protocol.test.InternalTestPatternSpec;
 import org.gradle.tooling.internal.provider.action.TestExecutionRequestAction;
 
 import java.util.Collection;
@@ -69,10 +70,11 @@ class TestExecutionResultEvaluator implements BuildOperationListener {
     }
 
     public void evaluate() {
-        if (hasUnmatchedTests()) {
-            String formattedTestRequest = formatInternalTestExecutionRequest();
-            throw new TestExecutionException("No matching tests found in any candidate test task.\n" + formattedTestRequest);
-        }
+        // TODO what?
+//        if (hasUnmatchedTests()) {
+//            String formattedTestRequest = formatInternalTestExecutionRequest();
+//            throw new TestExecutionException("No matching tests found in any candidate test task.\n" + formattedTestRequest);
+//        }
         if (hasFailedTests()) {
             StringBuilder failedTestsMessage = new StringBuilder("Test failed.\n")
                 .append(INDENT).append("Failed tests:");
@@ -100,6 +102,21 @@ class TestExecutionResultEvaluator implements BuildOperationListener {
                 requestDetails.append("\n").append(Strings.repeat(INDENT, 2)).append("Test method ").append(className).append(".").append(methodName).append("()");
             }
         }
+
+        if (internalTestExecutionRequest.getTestPatternSpecs() != null) {
+            for (InternalTestPatternSpec testPatternSpec : internalTestExecutionRequest.getTestPatternSpecs()) {
+                if (!testPatternSpec.getClasses().isEmpty()) {
+                    requestDetails.append("\n").append(Strings.repeat(INDENT, 2)).append("Test pattern - class: ").append(testPatternSpec.getClasses()).append(" in task " + testPatternSpec.getTaskPath());
+                }
+                if (!testPatternSpec.getPackages().isEmpty()) {
+                    requestDetails.append("\n").append(Strings.repeat(INDENT, 2)).append("Test pattern - package: ").append(testPatternSpec.getPackages()).append(" in task " + testPatternSpec.getTaskPath());
+                }
+                if (!testPatternSpec.getPatterns().isEmpty()) {
+                    requestDetails.append("\n").append(Strings.repeat(INDENT, 2)).append("Test pattern - pattern: ").append(testPatternSpec.getPatterns()).append(" in task " + testPatternSpec.getTaskPath());
+                }
+            }
+        }
+
         return requestDetails.toString();
     }
 
