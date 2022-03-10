@@ -48,8 +48,17 @@ class VerificationFailureHandlingIntegraitonTest extends AbstractIntegrationSpec
     }
 
     def 'consumer task executes when it has a producer task output dependency and producer task has verification failure, with --continue'() {
-        expect:
+        when:
         fails('consumerTask', '--continue')
+
+        then:
+        result.assertTaskExecuted(':producerTask')
+        result.assertTaskExecuted(':consumerTask')
+
+        when:
+        fails('consumerTask', '--continue')
+
+        then:
         result.assertTaskExecuted(':producerTask')
         result.assertTaskExecuted(':consumerTask')
     }

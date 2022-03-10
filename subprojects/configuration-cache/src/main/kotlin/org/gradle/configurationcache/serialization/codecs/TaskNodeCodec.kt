@@ -55,6 +55,7 @@ import org.gradle.configurationcache.serialization.withPropertyTrace
 import org.gradle.configurationcache.serialization.writeCollection
 import org.gradle.configurationcache.serialization.writeEnum
 import org.gradle.execution.plan.LocalTaskNode
+import org.gradle.execution.plan.Node
 import org.gradle.execution.plan.TaskNodeFactory
 import org.gradle.internal.fingerprint.DirectorySensitivity
 import org.gradle.internal.fingerprint.LineEndingSensitivity
@@ -69,11 +70,14 @@ class TaskNodeCodec(
     override suspend fun WriteContext.encode(value: LocalTaskNode) {
         val task = value.task
         writeTask(task)
+        writeCollection(value.lifecycleSuccessors)
     }
 
     override suspend fun ReadContext.decode(): LocalTaskNode {
         val task = readTask()
+        val lifecycleDependencies = readCollectionInto { HashSet() } as Set<Node>
         val node = taskNodeFactory.getOrCreateNode(task) as LocalTaskNode
+        node.lifecycleSuccessors = lifecycleDependencies
         node.isolated()
         return node
     }

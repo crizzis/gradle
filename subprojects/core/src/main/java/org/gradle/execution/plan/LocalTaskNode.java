@@ -257,6 +257,14 @@ public class LocalTaskNode extends TaskNode {
         }
     }
 
+    public Set<Node> getLifecycleSuccessors() {
+        return lifecycleSuccessors;
+    }
+
+    public void setLifecycleSuccessors(Set<Node> lifecycleSuccessors) {
+        this.lifecycleSuccessors = lifecycleSuccessors;
+    }
+
     /**
      * Used to determine whether a {@link Node} consumes the <b>outcome</b> of a successor task vs. its output(s).
      *
@@ -265,7 +273,6 @@ public class LocalTaskNode extends TaskNode {
      */
     @Override
     protected boolean dependsOnOutcome(Node dependency) {
-        return true;
-//        return lifecycleSuccessors.contains(dependency);
+        return lifecycleSuccessors.contains(dependency);
     }
 }
