@@ -265,6 +265,7 @@ public class LocalTaskNode extends TaskNode {
      */
     @Override
     protected boolean dependsOnOutcome(Node dependency) {
-        return lifecycleSuccessors.contains(dependency);
+        return true;
+//        return lifecycleSuccessors.contains(dependency);
     }
 }
